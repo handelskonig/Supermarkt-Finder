@@ -2,44 +2,47 @@
 const mongoose = require('mongoose');
 mongoose.connect('mongodb+srv://InnoUser:InnoPassword@innocluster.ilvrezq.mongodb.net/ProductDb?retryWrites=true&w=majority')
 .then(() => {
-  console.log("connected to db")
+  console.log("connected to db");
 })
 .catch(() => {
-  console.log("error connecting to db")
+  console.log("error connecting to db");
 });
 
 //get schema
-const Product = require('./model/entry')
+const Product = require('./model/entry');
 
 //express
 const express = require('express');
 const app = express();
+app.use(express.json());
 const PORT = 3000;
 
 //Graph
-const Graph = require('node-dijkstra');
+const route = require('./graph/graph');
 
-  const route = new Graph();
-  route.addNode('A', { B: 1 });
-  route.addNode('B', { A: 1, C: 2, D: 4 });
-  route.addNode('C', { B: 2, D: 1 });
-  route.addNode('D', { C: 1, B: 4 });
-
+//routes
 app.get('/', (req, res) => {
-  Product.find({product: "Test"})
+  Product.find({product: req.body.product})
   .then(documents => {
-    console.log("Found: " + documents)
+    console.log("Found: " + documents);
+    if(documents.length == 0) {
+      res.status(401).json({message: "Product does not exist"});
+    }
+    else {
+      node = documents[0].node;
+      finalPath = route.path('A', node);
+      res.status(200).json({message: finalPath});
+    }
   })
-  res.send("hello express")
 });
 
 app.post('/', (req, res) => {
   const entry = new Product({
-    product: "Post",
-    node: "Z"
-  })
-  entry.save()
-  res.send("inserted")
+    product: req.body.product,
+    node: req.body.node
+  });
+  entry.save();
+  res.send("inserted product " + req.body.product + ", node: " + req.body.node);
 })
 
 app.listen(PORT, (error) => {
@@ -49,3 +52,4 @@ app.listen(PORT, (error) => {
     );
   else console.log("Error occurred, server can't start", error);
 });
+
