@@ -1,3 +1,6 @@
+//Cors
+let cors = require('cors');
+
 //connect to db
 const mongoose = require('mongoose');
 mongoose.connect('mongodb+srv://InnoUser:InnoPassword@innocluster.ilvrezq.mongodb.net/ProductDb?retryWrites=true&w=majority')
@@ -14,6 +17,7 @@ const Product = require('./model/entry');
 //express
 const express = require('express');
 const app = express();
+app.use(cors());
 app.use(express.json());
 const PORT = 3000;
 
@@ -21,7 +25,8 @@ const PORT = 3000;
 const route = require('./graph/graph');
 
 //routes
-app.get('/', (req, res) => {
+app.post('/products', (req, res) => {
+  console.log(req.body.product)
   Product.find({product: req.body.product})
   .then(documents => {
     console.log("Found: " + documents);
@@ -36,7 +41,7 @@ app.get('/', (req, res) => {
   })
 });
 
-app.post('/', (req, res) => {
+app.post('/add', (req, res) => {
   const entry = new Product({
     product: req.body.product,
     node: req.body.node
