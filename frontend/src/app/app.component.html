@@ -12,17 +12,25 @@
   <div class="p-5 text-center bg-light">
     <h1 >Der schnellste Weg zu ihrem gewünschten Produkt</h1>
 
-    <form class="search-form" [formGroup]="myControl" (ngSubmit)="search()">
+    <form class="search-form" [formGroup]="mySearch" (ngSubmit)="search()">
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Abteilung</mat-label>
         <input type="text"
                placeholder="Pick one"
                aria-label="Number"
                matInput
-               id="product"
-               formControlName="search">
+               [formControl]="myControl"
+               [matAutocomplete]="auto">
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
       </mat-form-field>
       <button type="submit" class="btn btn-success" style="margin-left: 20px; margin-bottom: 20px;"> Suche</button>
+      <br>
+      <h3 id="path"></h3>
+      <br>
     </form>
 
     <div class="imgbox">
