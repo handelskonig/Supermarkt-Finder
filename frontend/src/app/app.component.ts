@@ -10,7 +10,7 @@ import {map, startWith} from 'rxjs/operators';
   styleUrls: ['./app.component.css']
 })
 
-export class AutocompleteSimpleExample implements OnInit{
+export class ExportFunctions implements OnInit{
 
   constructor(private http: HttpClient) { }
 
@@ -21,45 +21,52 @@ export class AutocompleteSimpleExample implements OnInit{
       'Content-Type':  'application/json'
     })
   };
-  
-  myControl = new FormGroup({
+
+  mySearch = new FormGroup({
     search: new FormControl(''),
   })
 
-  /*
+  
   myControl = new FormControl('');
   options: string[] = ['Schokolade', 'Bier', 'Softdrinks', 'Wasser', 'Obst', 'Gemüse', 'ToGo', 'Frühstück',
-   'Feinkost', 'Konserven', 'Gewürze', 'Fleisch', 'Milchprodukte', 'Tiefkühlscahen', 'Haushaltsgegenstaende', 'Teigwaren', 'Backsachen', 'Chips' ];
+   'Feinkost', 'Konserven', 'Gewürze', 'Fleisch', 'Milchprodukte', 'Tiefkühlprodukte', 'Haushaltsgegenstaende', 'Teigwaren', 'Backsachen', 'Chips' ];
   filteredOptions!: Observable<string[]>;
-*/
+
   
   ngOnInit(): void{
-    /*
+    
     this.filteredOptions = this.myControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filter(value || '')),
     );
-    */
+    
   }
   
-  /*
+  
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
 
     return this.options.filter(option => option.toLowerCase().includes(filterValue));
   }
-  */
+  
 
   search() {
     const searchData = {
-      product: this.myControl.value.search
+      product: this.mySearch.value.search
     };
     
     const req = this.http.post<{message: any}>(this.serverUrl + "products", searchData, this.httpOptions).subscribe(
       (responseData) => {
         console.log(responseData.message);
+        document.getElementById("path")!.style.color = 'black';
+        document.getElementById("path")!.innerHTML = "Der schnellste Weg zum gesuchten Produkt: " + responseData.message;
     }, (error) => {
       console.log('Error: ' + error.message);
+      document.getElementById("path")!.style.color = 'red';
+      if(error.status == 401)
+        document.getElementById("path")!.innerHTML = "Fehler: " + "<br>" + "Produkt wurde nicht gefunden";
+      else
+        document.getElementById("path")!.innerHTML = "Test: " + "<br>" + error.status;
     });
   }
   
