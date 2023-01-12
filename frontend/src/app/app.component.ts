@@ -58,6 +58,7 @@ export class ExportFunctions implements OnInit{
     const req = this.http.post<{message: any}>(this.serverUrl + "products", searchData, this.httpOptions).subscribe(
       (responseData) => {
         console.log(responseData.message);
+        document.getElementById("path")!.style.color = 'black';
         document.getElementById("path")!.innerHTML = "Der schnellste Weg zum gesuchten Produkt: " + responseData.message;
     }, (error) => {
       console.log('Error: ' + error.message);
